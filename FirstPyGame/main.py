@@ -1,11 +1,9 @@
 import pygame, random, os
-from type_game.explosion import Explosion
-from type_game.score import Score
-from type_game.highscore import Highscore
-from type_game.backgroundmusic import BackgroundMusic
-from type_game.wordListMIT import WordListMIT
-from type_game.wordListProgramming import WordListProgramming
-
+from explosion import Explosion
+from score import Score
+from highscore import Highscore
+from backgroundmusic import BackgroundMusic
+from wordListMIT import WordListMIT
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -15,7 +13,7 @@ pygame.init()
 pygame.font.init()
 
 clock = pygame.time.Clock()
-pygame.display.set_caption("Typer_Lasse")
+pygame.display.set_caption("TypeMaster")
 gameWidth = 1400
 gameHeight = 800
 spawnWordEvent = 25
@@ -36,14 +34,14 @@ words = WordListMIT.listOfWords
 onScreenExplosions = []
 sampleExplosion = Explosion(0, 0)
 
-bgMusic = BackgroundMusic("ytedred")
+bgMusic = BackgroundMusic("halo")
 
 wordsInPlay = []
 
-spawnInterval = 2000
-movePerFrame = 15
+spawnInterval = 2800
+movePerMs = 15
 pygame.time.set_timer(spawnWordEvent, spawnInterval)
-pygame.time.set_timer(moveWordEvent, movePerFrame)
+pygame.time.set_timer(moveWordEvent, movePerMs)
 
 pygame.time.set_timer(increaseSpeedEvent, 10000)
 
@@ -171,20 +169,27 @@ def increaseSpeed():
     if gameOver:
         return
 
-    global spawnInterval, movePerFrame
+    global spawnInterval, movePerMs
 
-    if movePerFrame > 11:
-        movePerFrame -= 1
+    speedIncreased = False
 
-    spawnInterval *= 0.95
-    spawnInterval = int(spawnInterval)
-    pygame.time.set_timer(spawnWordEvent, spawnInterval)
+    if movePerMs > 11:
+        movePerMs -= 1
+        speedIncreased = True
 
-    spawnEvent = pygame.event.Event(spawnWordEvent, {})
-    pygame.event.post(spawnEvent)
-    pygame.time.set_timer(moveWordEvent, movePerFrame)
+    if spawnInterval != 1500:
+        spawnInterval -= 100
+        spawnInterval = int(spawnInterval)
+        pygame.time.set_timer(spawnWordEvent, spawnInterval)
 
-    print("Speed increased, now spawns every " + str(spawnInterval) + " ms, and moves every " + str(movePerFrame) + " frames...")
+        spawnEvent = pygame.event.Event(spawnWordEvent, {})
+        pygame.event.post(spawnEvent)
+        pygame.time.set_timer(moveWordEvent, movePerMs)
+
+        speedIncreased = True
+
+    if speedIncreased:
+        print("Speed increased, now spawns every " + str(spawnInterval) + " ms, and moves every " + str(movePerMs) + " ms...")
 
 
 def drawExplosion():
